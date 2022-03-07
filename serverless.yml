@@ -1,0 +1,38 @@
+service: serverless-ajbourg
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: ruby2.7
+  profile: jets
+  region: us-west-2
+  architecture: arm64
+  memorySize: 512
+
+plugins:
+  - serverless-rack
+  - serverless-dynamodb-local
+functions:
+  main:
+    handler: rack_adapter.handler
+    events:
+      - http: ANY /
+      - http: ANY {proxy+}
+
+resources:
+  Resources:
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: User
+        AttributeDefinitions:
+          - AttributeName: token
+            AttributeType: S
+          - AttributeName: Name
+            AttributeType: S
+          - AttributeName: active
+            AttributeType: B
+        KeySchema:
+          - AttributeName: token
+            KeyType: HASH
+
