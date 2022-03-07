@@ -1,0 +1,25 @@
+service: serverless-ajbourg
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: ruby2.7
+  profile: jets
+  region: us-west-2
+  architecture: arm64
+  memorySize: 512
+
+plugins:
+  - serverless-rack
+
+custom:
+  rack:
+    # for compiling the native extensions nokogiri et al need
+    dockerizeBundler: true
+
+functions:
+  main:
+    handler: rack_adapter.handler
+    events:
+      - http: ANY /
+      - http: ANY {proxy+}
